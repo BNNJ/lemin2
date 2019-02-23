@@ -14,7 +14,7 @@
 
 static void	lm_usage(void)
 {
-	ft_dprintf(2, "usage:\t./lem-in [-g/s/p/d/c/a/v] [--ants=X] < 'file'\n");
+	ft_dprintf(2, "usage:\t./lem-in [-g/s/p/d/c/a/v] [--ants=X] < <map>\n");
 	ft_dprintf(2, "\t-g --debug : enable debug mode\n");
 	ft_dprintf(2, "\t-s --strict : disable strict mode\n");
 	ft_dprintf(2, "\t-p --print : do not print the map\n");
