@@ -47,8 +47,9 @@ void	print_rooms(t_lm *lm)
 	i = 0;
 	while (i < lm->nb_room)
 	{
-		ft_printf("  room #%d\n  name : %s\n  link nb : %d\n",
-			i, lm->rooms[i]->name, lm->rooms[i]->nb_link);
+		ft_printf("  room #%d\n  name : %s\n  link nb : %d\n  coords : %d,%d\n",
+			i, lm->rooms[i]->name, lm->rooms[i]->nb_link,
+			lm->rooms[i]->coord.x, lm->rooms[i]->coord.y);
 		j = 0;
 		while (j < lm->rooms[i]->nb_link)
 		{

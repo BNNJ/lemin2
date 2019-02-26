@@ -75,8 +75,6 @@ static void		send_ants(t_lm *lm)
 	int		step;
 
 	step = 0;
-	if (~lm->opt & OPT_PRINT)
-		ft_printf("\n");
 	while (step < lm->nb_step)
 	{
 		move_forward(lm, &step);
@@ -100,6 +98,8 @@ static void		send_ants(t_lm *lm)
 
 void			ants(t_lm *lm)
 {
+	if (~lm->opt & OPT_PRINT)
+		ft_printf("\n");
 	if ((lm->ants = setup_ants(lm)))
 	{
 		if (lm->opt & OPT_VIEWER)
