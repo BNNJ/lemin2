@@ -13,10 +13,10 @@
 #ifndef LEMIN_H
 # define LEMIN_H
 
+# include <limits.h>
+# include <errno.h>
 # include "libft.h"
 # include "ft_printf.h"
-# include "limits.h"
-# include <errno.h>
 # include "SDL.h"
 
 # define DEBUG_VALUE 1024
@@ -105,7 +105,6 @@ typedef struct			s_lm
 	int				nb_path;
 	int				required;
 	int				**adjmat;
-	int				**viewmat;
 	int				opt;
 	int				nb_ant;
 	int				nb_step;
