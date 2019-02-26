@@ -23,21 +23,23 @@ void		lm_setup_links(t_lm *lm)
 	int		k;
 	t_room	*tmp;
 
-	i = lm->nb_room;
-	while (--i >= 0)
+	i = 0;
+	while (i < lm->nb_room)
 	{
 		tmp = lm->rooms[i];
 		if (!(tmp->links = ft_memalloc(sizeof(t_room*) * tmp->nb_link)))
 			lm_exit(lm, "alloc error", EXIT_FAILURE);
-		j = lm->nb_room;
+		j = 0;
 		k = 0;
-		while (--j >= 0)
+		while (j < lm->nb_room)
 		{
 			if (lm->adjmat[i][j] == 1)
 			{
 				tmp->links[k] = lm->rooms[j];
 				++k;
 			}
+			++j;
 		}
+		++i;
 	}
 }

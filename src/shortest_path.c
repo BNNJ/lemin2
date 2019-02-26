@@ -20,12 +20,14 @@
 ** This "reverse flow" is used to reuse nodes to create new paths.
 */
 
-static void		update_neighbors(t_lm *lm, t_room *cur)
+static int		update_neighbors(t_lm *lm, t_room *cur)
 {
 	int		i;
 	t_room	*tmp;
+	int		ret;
 
 	i = 0;
+	ret = 0;
 	while (i < cur->nb_link)
 	{
 		tmp = cur->links[i];
@@ -34,6 +36,7 @@ static void		update_neighbors(t_lm *lm, t_room *cur)
 			if (!(cur->status & CROSSROAD)
 				|| (cur->status & CROSSROAD && tmp->next == cur))
 			{
+				ret = 1;
 				tmp->dist = cur->dist + 1;
 				if (tmp->status & SPT_MEMBER && tmp->next != cur)
 					tmp->status |= CROSSROAD;
@@ -41,6 +44,7 @@ static void		update_neighbors(t_lm *lm, t_room *cur)
 		}
 		++i;
 	}
+	return (ret);
 }
 
 /*
@@ -70,8 +74,7 @@ static t_room	*get_closest_room(t_lm *lm)
 
 /*
 ** Goes through the path backward. Previous nodes are found using the distance.
-** A temporary path is set using 'spt_path', which can later be
-** used to remove that path if it is invalid or counter-productive.
+** A temporary path is set using 'spt_path'.
 */
 
 static void		update_path(t_lm *lm)
@@ -84,9 +87,7 @@ static void		update_path(t_lm *lm)
 	{
 		i = 0;
 		while (cur->links[i]->dist != cur->dist - 1)
-		{
 			++i;
-		}
 		cur->links[i]->spt_next = cur;
 		--lm->adjmat[cur->links[i]->id][cur->id];
 		++lm->adjmat[cur->id][cur->links[i]->id];
@@ -115,7 +116,7 @@ static void		init_rooms(t_lm *lm)
 }
 
 /*
-** Basic BFS algorithm, searches for the shortest path available.
+** BFS algorithm with a few twists, searches for the shortest path available.
 ** Start's distance is initialized to 0 so it gets picked first.
 ** Returns a pointer to the first room of the path found (excluding start)
 ** or NULL if no path is found
@@ -133,7 +134,11 @@ t_room			*lm_shortest_path(t_lm *lm)
 		if (!(cur = get_closest_room(lm)))
 			return (NULL);
 		cur->status |= VISITED;
-		update_neighbors(lm, cur);
+		if (!(update_neighbors(lm, cur)) && cur != lm->end)
+		{
+			cur->status &= ~(CROSSROAD | VISITED);
+			cur->dist = INT_MAX;
+		}
 	}
 	update_path(lm);
 	return (lm->start->spt_next);
