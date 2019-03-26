@@ -107,8 +107,7 @@ static void		init_rooms(t_lm *lm)
 	i = 0;
 	while (i < lm->nb_room)
 	{
-		lm->rooms[i]->status &= ~VISITED;
-		lm->rooms[i]->status &= ~CROSSROAD;
+		lm->rooms[i]->status &= ~(VISITED | CROSSROAD);
 		lm->rooms[i]->dist = INT_MAX;
 		lm->rooms[i]->spt_next = NULL;
 		++i;
@@ -125,20 +124,28 @@ static void		init_rooms(t_lm *lm)
 t_room			*lm_shortest_path(t_lm *lm)
 {
 	t_room	*cur;
+	int		case_check;
 
 	init_rooms(lm);
 	lm->start->dist = 0;
 	cur = NULL;
+	ft_printf("###########\n");
 	while (cur != lm->end)
 	{
 		if (!(cur = get_closest_room(lm)))
 			return (NULL);
 		cur->status |= VISITED;
-		if (!(update_neighbors(lm, cur)) && cur != lm->end)
+		if (!(case_check = update_neighbors(lm, cur)) && cur != lm->end)
 		{
-			cur->status &= ~(CROSSROAD | VISITED);
-			cur->dist = INT_MAX;
+			ft_printf("NOPE:	%s\n", cur->name);
+			if (case_check == 1)
+			{
+				cur->status &= ~(CROSSROAD | VISITED);
+				++cur->dist;
+			}
 		}
+		else
+			ft_printf("OKAY:	%s\n", cur->name);
 	}
 	update_path(lm);
 	return (lm->start->spt_next);
