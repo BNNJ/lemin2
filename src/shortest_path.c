@@ -12,15 +12,99 @@
 
 #include "lemin.h"
 
+typedef struct	s_queue
+{
+	t_room	*start;
+	t_room	*end;
+}				t_queue;
+
+static void		enqueue(t_queue *q, t_room *r)
+{
+	r->q_next = NULL;
+	if (q->end)
+		q->end->q_next = r;
+	else
+		q->start = r;
+	r->status |= QUEUED;
+	q->end = r;
+}
+
+static t_room	*dequeue(t_queue *q)
+{
+	t_room	*r;
+
+	r = q->start;
+	if (q->start)
+	{
+		q->start = q->start->q_next;
+		r->status &= ~QUEUED;
+		r->q_next = NULL;
+	}
+	if (!q->start)
+		q->end = NULL;
+	return (r);
+}
 /*
-** Update the distance of the rooms adjacent to 'room'
-** If the current room already has link to another room,
-** it means it is already part of a path, so it cannot be used except to go
-** back to the room linking to it.
-** This "reverse flow" is used to reuse nodes to create new paths.
+static t_room	*update_path(t_lm *lm)
+{
+	int		i;
+	t_room	*r;
+	t_room	*prev;
+
+	r = lm->end;
+	while (r != lm->start)
+	{
+		i = 0;
+		while (r->links[i]->dist != r->dist - 1)
+			++i;
+		prev = r->links[i];
+		--lm->adjmat[prev->id][r->id];
+		++lm->adjmat[r->id][prev->id];
+		if (r->dist == 1)
+		{
+			ft_printf("%s\n", r->name);
+			return (r);
+		}
+		r = prev;
+	}
+	return (NULL);
+}
 */
 
-static int		update_neighbors(t_lm *lm, t_room *cur)
+static t_room	*update_path(t_lm *lm)
+{
+	t_room	*r;
+	t_room	*prev;
+
+	r = lm->end;
+	while (r != lm->start)
+	{
+		prev = r->prev;
+		--lm->adjmat[prev->id][r->id];
+		++lm->adjmat[r->id][prev->id];
+		if (prev == lm->start)
+			return (r);
+		r = prev;
+	}
+	return (NULL);
+}
+
+static void		init_rooms(t_lm *lm)
+{
+	int		i;
+
+	i = 0;
+	while (i < lm->nb_room)
+	{
+		lm->rooms[i]->status &= ~(VISITED | QUEUED | CROSSROAD);
+		lm->rooms[i]->dist = INT_MAX;
+		lm->rooms[i]->q_next = NULL;
+		lm->rooms[i]->prev = NULL;
+		++i;
+	}
+}
+
+static int		visit_room(t_lm *lm, t_room *r, t_queue *q)
 {
 	int		i;
 	t_room	*tmp;
@@ -28,18 +112,25 @@ static int		update_neighbors(t_lm *lm, t_room *cur)
 
 	i = 0;
 	ret = 0;
-	while (i < cur->nb_link)
+	while (i < r->nb_link)
 	{
-		tmp = cur->links[i];
-		if (lm->adjmat[cur->id][tmp->id] > 0 && tmp->dist > cur->dist + 1)
+		tmp = r->links[i];
+		if (lm->adjmat[r->id][tmp->id] > 0 && ~tmp->status & VISITED)
 		{
-			if (!(cur->status & CROSSROAD)
-				|| (cur->status & CROSSROAD && tmp->next == cur))
+			if (~tmp->status & QUEUED
+				&& (~r->status & CROSSROAD || tmp->next == r))
+			{
+				enqueue(q, tmp);
+				tmp->prev = r;
+				ret = 1;
+				if (tmp->status & SPT_MEMBER && tmp->next != r)
+					tmp->status |= CROSSROAD;
+			}
+			else if (tmp->status & QUEUED && tmp->status & CROSSROAD)
 			{
 				ret = 1;
-				tmp->dist = cur->dist + 1;
-				if (tmp->status & SPT_MEMBER && tmp->next != cur)
-					tmp->status |= CROSSROAD;
+				tmp->prev = r;
+				tmp->status &= ~CROSSROAD;
 			}
 		}
 		++i;
@@ -47,99 +138,21 @@ static int		update_neighbors(t_lm *lm, t_room *cur)
 	return (ret);
 }
 
-/*
-** Returns the non-visited room that is closest to the start.
-*/
-
-static t_room	*get_closest_room(t_lm *lm)
-{
-	int		i;
-	int		dist;
-	t_room	*tmp;
-
-	i = 0;
-	dist = INT_MAX;
-	tmp = NULL;
-	while (i < lm->nb_room)
-	{
-		if (lm->rooms[i]->dist < dist && !(lm->rooms[i]->status & VISITED))
-		{
-			dist = lm->rooms[i]->dist;
-			tmp = lm->rooms[i];
-		}
-		++i;
-	}
-	return (tmp);
-}
-
-/*
-** Goes through the path backward. Previous nodes are found using the distance.
-** A temporary path is set using 'spt_path'.
-*/
-
-static void		update_path(t_lm *lm)
-{
-	int		i;
-	t_room	*cur;
-
-	cur = lm->end;
-	while (cur != lm->start)
-	{
-		i = 0;
-		while (cur->links[i]->dist != cur->dist - 1)
-			++i;
-		cur->links[i]->spt_next = cur;
-		--lm->adjmat[cur->links[i]->id][cur->id];
-		++lm->adjmat[cur->id][cur->links[i]->id];
-		cur = cur->links[i];
-	}
-}
-
-/*
-** Resets rooms variables.
-** Rooms distances are set to INT_MAX (virtually infinity),
-*/
-
-static void		init_rooms(t_lm *lm)
-{
-	int	i;
-
-	i = 0;
-	while (i < lm->nb_room)
-	{
-		lm->rooms[i]->status &= ~VISITED;
-		lm->rooms[i]->status &= ~CROSSROAD;
-		lm->rooms[i]->dist = INT_MAX;
-		lm->rooms[i]->spt_next = NULL;
-		++i;
-	}
-}
-
-/*
-** BFS algorithm with a few twists, searches for the shortest path available.
-** Start's distance is initialized to 0 so it gets picked first.
-** Returns a pointer to the first room of the path found (excluding start)
-** or NULL if no path is found
-*/
-
 t_room			*lm_shortest_path(t_lm *lm)
 {
-	t_room	*cur;
+	t_queue	q;
+	t_room	*r;
 
+	q = (t_queue){NULL, NULL};
 	init_rooms(lm);
-	lm->start->dist = 0;
-	cur = NULL;
-	while (cur != lm->end)
+	enqueue(&q, lm->start);
+	while (q.start && r != lm->end)
 	{
-		if (!(cur = get_closest_room(lm)))
-			return (NULL);
-		cur->status |= VISITED;
-		if (!(update_neighbors(lm, cur)) && cur != lm->end)
-		{
-//			cur->status &= ~(CROSSROAD | VISITED);
-//			cur->dist = INT_MAX;
-		}
+		r = dequeue(&q);
+		if (visit_room(lm, r, &q))
+			r->status |= VISITED;
+		else
+			r->status &= ~CROSSROAD;
 	}
-	update_path(lm);
-	return (lm->start->spt_next);
+	return (r == lm->end ? update_path(lm) : NULL);
 }
