@@ -78,7 +78,6 @@ struct					s_room
 	char			*name;
 	int				id;
 	int				status;
-	ssize_t			dist;
 	t_point			coord;
 	t_ant			*ant;
 	int				ant_id;

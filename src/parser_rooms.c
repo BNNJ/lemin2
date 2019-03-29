@@ -77,7 +77,6 @@ static t_room	*lm_add_room(t_lm *lm, t_parser *p)
 	i = lm->nb_room;
 	new_room->coord.x = p->x;
 	new_room->coord.y = p->y;
-	new_room->dist = INT_MAX;
 	new_room->name = p->name;
 	new_room->status = 0;
 	p->name = NULL;
