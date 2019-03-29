@@ -18,6 +18,7 @@ SRCS		=	lemin.c				\
 				ants.c				\
 				minilib_ants.c		\
 				shortest_path.c		\
+				minilib_queue.c		\
 				minilib_matrix.c	\
 				print_stuff.c		\
 				viewer.c			\
@@ -50,13 +51,13 @@ SDL_LIB		=	$(SDL_DIR)/libSDL2.a
 SDL_INC		=	$(SDL_ROOT)/include/SDL2
 
 INC_FLAGS	=	-I$(INC_DIR) -I$(LIBFT_INC) -I$(FTPF_INC) -I$(SDL_INC)
-LINK_FLAGS	=	-L$(LIBFT_DIR) -lft -L$(FTPF_DIR) -lftprintf \
-				-L$(SDL_DIR) -lSDL2
+LINK_FLAGS	=	-L$(LIBFT_DIR) -L$(FTPF_DIR) \
+				-L$(SDL_DIR) -lSDL2 -lft -lftprintf 
 
 all:			$(NAME)
 
 $(NAME):		$(SDL_LIB) $(OBJ_DIR) $(OBJ) $(LIBFT) $(FTPF)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(INC_FLAGS) $(LINK_FLAGS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LINK_FLAGS)
 
 message:
 	@echo compiling $(NAME)...

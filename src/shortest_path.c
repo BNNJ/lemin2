@@ -12,65 +12,6 @@
 
 #include "lemin.h"
 
-typedef struct	s_queue
-{
-	t_room	*start;
-	t_room	*end;
-}				t_queue;
-
-static void		enqueue(t_queue *q, t_room *r)
-{
-	r->q_next = NULL;
-	if (q->end)
-		q->end->q_next = r;
-	else
-		q->start = r;
-	r->status |= QUEUED;
-	q->end = r;
-}
-
-static t_room	*dequeue(t_queue *q)
-{
-	t_room	*r;
-
-	r = q->start;
-	if (q->start)
-	{
-		q->start = q->start->q_next;
-		r->status &= ~QUEUED;
-		r->q_next = NULL;
-	}
-	if (!q->start)
-		q->end = NULL;
-	return (r);
-}
-/*
-static t_room	*update_path(t_lm *lm)
-{
-	int		i;
-	t_room	*r;
-	t_room	*prev;
-
-	r = lm->end;
-	while (r != lm->start)
-	{
-		i = 0;
-		while (r->links[i]->dist != r->dist - 1)
-			++i;
-		prev = r->links[i];
-		--lm->adjmat[prev->id][r->id];
-		++lm->adjmat[r->id][prev->id];
-		if (r->dist == 1)
-		{
-			ft_printf("%s\n", r->name);
-			return (r);
-		}
-		r = prev;
-	}
-	return (NULL);
-}
-*/
-
 static t_room	*update_path(t_lm *lm)
 {
 	t_room	*r;
@@ -97,7 +38,6 @@ static void		init_rooms(t_lm *lm)
 	while (i < lm->nb_room)
 	{
 		lm->rooms[i]->status &= ~(VISITED | QUEUED | CROSSROAD);
-		lm->rooms[i]->dist = INT_MAX;
 		lm->rooms[i]->q_next = NULL;
 		lm->rooms[i]->prev = NULL;
 		++i;
@@ -138,6 +78,13 @@ static int		visit_room(t_lm *lm, t_room *r, t_queue *q)
 	return (ret);
 }
 
+static void		reset_room(t_room *r)
+{
+	while (~r->status & CROSSROAD)
+		r = r->prev;
+	r->status &= ~(CROSSROAD | VISITED);
+}
+
 t_room			*lm_shortest_path(t_lm *lm)
 {
 	t_queue	q;
@@ -151,8 +98,8 @@ t_room			*lm_shortest_path(t_lm *lm)
 		r = dequeue(&q);
 		if (visit_room(lm, r, &q))
 			r->status |= VISITED;
-		else
-			r->status &= ~CROSSROAD;
+		else if (r->status & SPT_MEMBER)
+			reset_room(r);
 	}
 	return (r == lm->end ? update_path(lm) : NULL);
 }

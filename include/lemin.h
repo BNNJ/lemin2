@@ -32,6 +32,7 @@
 # define VISITED 1
 # define SPT_MEMBER 2
 # define CROSSROAD 4
+# define QUEUED 8
 
 # define OPT_PRINT 1
 # define OPT_DEBUG 2
@@ -43,6 +44,12 @@
 # define OPT_ANT 512
 
 typedef struct s_room	t_room;
+
+typedef struct			s_queue
+{
+	t_room			*start;
+	t_room			*end;
+}						t_queue;
 
 typedef struct			s_ant
 {
@@ -78,7 +85,7 @@ struct					s_room
 	int				nb_link;
 	t_room			**links;
 	t_room			*next;
-	t_room			*spt_next;
+	t_room			*q_next;
 	t_room			*prev;
 };
 
@@ -143,9 +150,11 @@ void					print_move_alt(t_lm *lm);
 
 /*
 ** utility functions
-** minilib.c, minilib_matrix.c, setup_links.c
+** minilib.c, minilib_matrix.c, minilib_queue.c, setup_links.c
 */
 
+void					enqueue(t_queue *q, t_room *r);
+t_room					*dequeue(t_queue *q);
 int						number_of_steps(t_lm *lm, int nb_paths);
 int						get_max_len(t_path *paths, int nb_paths);
 void					*free_matrix(int **matrix, int size);
