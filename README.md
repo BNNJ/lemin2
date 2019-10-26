@@ -19,21 +19,13 @@ Usage:	./lem-in [-g/s/p/d/c/a/v] [--ants=X] < map\
 |   Options   |                  Usage                        |
 |-------------|-----------------------------------------------|
 |--help       | Display usage and description                 |
-|-------------|-----------------------------------------------|
 |-g --debug   | Enable debug mode                             |
-|-------------|-----------------------------------------------|
 |-s --strict  | Disable strict mode (more permissive parsing) |
-|-------------|-----------------------------------------------|
 |-p --print   | Do not print the map                          |
-|-------------|-----------------------------------------------|
 |-d --display | Enable alternative solution display (incompatible with viewer)|
-|-------------|-----------------------------------------------|
 |-c --color   | Enable colorized ants                         |
-|-------------|-----------------------------------------------|
 |-a --alt     | Find alternative path                         |
-|-------------|-----------------------------------------------|
 |-v --viewer  | Enable viewer                                 |
-|-------------|-----------------------------------------------|
 |--ants=X     | Set X as number of ants (if X is valid)       |
 
 viewer controls:
