@@ -11,12 +11,13 @@ It parses stdin for data about ants, rooms and pipes.
 ## usage
 
 Compilation:\
-\> make\
-Usage:	./lem-in [-g/s/p/d/c/a/v] [--ants=X] < map\
+Simply type "make" while in the directory\
+Usage:\
+./lem-in [-g/s/p/d/c/a/v] [--ants=X] < map\
 
 ## options
 
-|   Options   |                  Usage                        |
+|   Options   |                  Effect                       |
 |-------------|-----------------------------------------------|
 |--help       | Display usage and description                 |
 |-g --debug   | Enable debug mode                             |
@@ -29,10 +30,10 @@ Usage:	./lem-in [-g/s/p/d/c/a/v] [--ants=X] < map\
 |--ants=X     | Set X as number of ants (if X is valid)       |
 
 viewer controls:
-|left/right   | Move backward/forward                         |
-|-------------|-----------------------------------------------|
-|up/down      | Speed up/down                                 |
-|-------------|-----------------------------------------------|
-|space        | Pause/unpause                                 |
-|-------------|-----------------------------------------------|
-|return       | Reset                                         |
+
+|    Keys     |          Effect       |
+|-------------|-----------------------|                  
+|left/right   | Move backward/forward |
+|up/down      | Speed up/down         |
+|space        | Pause/unpause         |
+|return       | Reset                 |
