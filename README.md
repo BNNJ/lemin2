@@ -13,17 +13,34 @@ It parses stdin for data about ants, rooms and pipes.
 Compilation:\
 \> make\
 Usage:	./lem-in [-g/s/p/d/c/a/v] [--ants=X] < map\
-&emsp;--help: Display usage and description\
-&emsp;-g --debug : enable debug mode\
-&emsp;-s --strict : disable strict mode\
-&emsp;-p --print : do not print the map\
-&emsp;-d --display : enable alternative solution display (incompatible with viewer)\
-&emsp;-c --color : enable colorized ants\
-&emsp;-a --alt : find alternative path\
-&emsp;-v --viewer : enable viewer\
-&emsp;--ants=X : set X as number of ants (if X is valid)\
-&emsp;viewer controls :\
-&emsp;&emsp;left/right : move backward/forward\
-&emsp;&emsp;up/down : speed up/down\
-&emsp;&emsp;space : pause/unpause\
-&emsp;&emsp;return : reset
+
+## options
+
+|   Options   |                  Usage                        |
+|-------------|-----------------------------------------------|
+|--help       | Display usage and description                 |
+|-------------|-----------------------------------------------|
+|-g --debug   | Enable debug mode                             |
+|-------------|-----------------------------------------------|
+|-s --strict  | Disable strict mode (more permissive parsing) |
+|-------------|-----------------------------------------------|
+|-p --print   | Do not print the map                          |
+|-------------|-----------------------------------------------|
+|-d --display | Enable alternative solution display (incompatible with viewer)|
+|-------------|-----------------------------------------------|
+|-c --color   | Enable colorized ants                         |
+|-------------|-----------------------------------------------|
+|-a --alt     | Find alternative path                         |
+|-------------|-----------------------------------------------|
+|-v --viewer  | Enable viewer                                 |
+|-------------|-----------------------------------------------|
+|--ants=X     | Set X as number of ants (if X is valid)       |
+
+viewer controls:
+|left/right   | Move backward/forward                         |
+|-------------|-----------------------------------------------|
+|up/down      | Speed up/down                                 |
+|-------------|-----------------------------------------------|
+|space        | Pause/unpause                                 |
+|-------------|-----------------------------------------------|
+|return       | Reset                                         |
