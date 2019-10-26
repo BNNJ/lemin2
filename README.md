@@ -7,6 +7,7 @@ In the High Energy Magic building of the Unseen University, Ponder Stibbons and
 
 Lem-in is a path finding program, in which ants are sent through a maze of rooms linked by pipes. It computes the best combination of paths from a room to another for a given network and number of ants.\
 It parses stdin for data about ants, rooms and pipes.
+A graphical representation made with SDL2 is available.
 
 ## usage
 
@@ -29,7 +30,7 @@ Usage:\
 |-v --viewer  | Enable viewer                                 |
 |--ants=X     | Set X as number of ants (if X is valid)       |
 
-viewer controls:
+## viewer controls
 
 |    Keys     |          Effect       |
 |-------------|-----------------------|                  
